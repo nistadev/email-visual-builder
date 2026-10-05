@@ -11,7 +11,7 @@ import {
   useBasicTypeaheadTriggerMatch,
 } from "@lexical/react/LexicalTypeaheadMenuPlugin";
 import { useCallback, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
+import { createScopedPortal } from "../../scope.js";
 import { $createVariableNode } from "../variable-node.js";
 
 class VariableMenuOption extends MenuOption {
@@ -87,7 +87,7 @@ export function VariablePickerPlugin({
         { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex },
       ) => {
         if (!anchorElementRef.current || options.length === 0) return null;
-        return createPortal(
+        return createScopedPortal(
           <ul className="donativus-vb-variable-menu" role="listbox">
             {options.map((option, index) => (
               <li

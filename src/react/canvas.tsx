@@ -23,7 +23,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { createPortal } from "react-dom";
+import { createScopedPortal } from "./scope.js";
 import { BlockContent, spacingToStyle } from "./canvas-block-content.js";
 import { DropSlot, useBlockDragHandle } from "./dnd.js";
 import { handleTreeKeyDown } from "./keyboard.js";
@@ -76,7 +76,7 @@ function CanvasHoverTooltip({
       : { top: cursor.y + offset }),
   };
 
-  return createPortal(
+  return createScopedPortal(
     <span
       className="donativus-vb-canvas-hover-tooltip bg-base-100 border-base-300"
       data-vb-canvas-hover-tooltip
@@ -85,7 +85,6 @@ function CanvasHoverTooltip({
     >
       {blockDisplayName(labels, hoveredNode.type)}
     </span>,
-    document.body,
   );
 }
 

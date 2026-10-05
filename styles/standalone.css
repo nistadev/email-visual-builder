@@ -1,0 +1,21 @@
+/* Source for the self-contained stylesheet shipped as
+   `email-visual-builder/standalone.css`, for hosts that do not run Tailwind
+   and daisyUI themselves. `scripts/build-standalone-css.mjs` compiles it and
+   confines every rule to `.donativus-vb-scope`, so none of it reaches the
+   host page. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@plugin "daisyui" {
+  themes:
+    light --default,
+    dark;
+  root: ".donativus-vb-scope";
+  logs: false;
+}
+
+@source "../src/react";
+
+@import "../src/react/styles.css";

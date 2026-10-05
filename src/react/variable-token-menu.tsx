@@ -19,7 +19,7 @@
 import type { VariableDefinition } from "../types/index.js";
 import { Braces, Plus } from "lucide-react";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { createScopedPortal } from "./scope.js";
 
 export interface VariableTokenMenuProps {
   variables: readonly VariableDefinition[];
@@ -238,7 +238,7 @@ export function VariableTokenMenu({
         {!iconOnly ? label.replace(/^\+\s*/, "") : null}
       </button>
       {open && position && typeof document !== "undefined"
-        ? createPortal(
+        ? createScopedPortal(
             <div
               ref={menuRef}
               className="donativus-vb-variable-insert-menu bg-base-100"
@@ -290,7 +290,6 @@ export function VariableTokenMenu({
                 )}
               </div>
             </div>,
-            document.body,
           )
         : null}
     </div>

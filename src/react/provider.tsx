@@ -39,6 +39,7 @@ import { exportVisualDocument } from "../renderers/pipeline.js";
 import { DEFAULT_RENDERER_REGISTRIES } from "../renderers/registries.js";
 import type { AssetAdapter } from "./asset-adapter.js";
 import { DEFAULT_BUILDER_LABELS, type BuilderLabels } from "./labels.js";
+import { Scope } from "./scope.js";
 
 export interface BuilderActions {
   dispatch: (command: BuilderCommand) => CommandResult;
@@ -166,12 +167,14 @@ export function BuilderProvider({
   if (documentMode !== mode) {
     // Decision #3: a preset refuses a document of the other mode — no implicit conversion.
     return (
-      <div
-        role="alert"
-        className="donativus-vb-mode-mismatch alert alert-error"
-      >
-        {meta.labels.modeMismatch}
-      </div>
+      <Scope>
+        <div
+          role="alert"
+          className="donativus-vb-mode-mismatch alert alert-error"
+        >
+          {meta.labels.modeMismatch}
+        </div>
+      </Scope>
     );
   }
 
@@ -180,14 +183,16 @@ export function BuilderProvider({
       <ActionsContext.Provider value={actions}>
         <MetaContext.Provider value={meta}>
           <ChromeContext.Provider value={chrome}>
-            {children}
-            <span
-              className="donativus-vb-visually-hidden"
-              role="status"
-              aria-live="polite"
-            >
-              {announcement ? announcement.message : ""}
-            </span>
+            <Scope>
+              {children}
+              <span
+                className="donativus-vb-visually-hidden"
+                role="status"
+                aria-live="polite"
+              >
+                {announcement ? announcement.message : ""}
+              </span>
+            </Scope>
           </ChromeContext.Provider>
         </MetaContext.Provider>
       </ActionsContext.Provider>

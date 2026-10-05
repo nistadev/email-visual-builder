@@ -22,7 +22,7 @@ import {
   Underline,
   Unlink,
 } from "lucide-react";
-import { createPortal } from "react-dom";
+import { createScopedPortal } from "../../scope.js";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   FONT_CATALOGUE,
@@ -304,7 +304,7 @@ export function FloatingFormattingToolbarPlugin({
     },
   ];
 
-  return createPortal(
+  return createScopedPortal(
     <div
       className={`donativus-vb-rich-text-toolbar bg-base-100 border-base-300 is-${toolbar.placement}`}
       style={{ left: `${toolbar.left}px`, top: `${toolbar.top}px` }}
@@ -453,6 +453,5 @@ export function FloatingFormattingToolbarPlugin({
         </div>
       ) : null}
     </div>,
-    document.body,
   );
 }

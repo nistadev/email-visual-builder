@@ -29,10 +29,21 @@ pnpm add email-visual-builder
 npm install email-visual-builder
 ```
 
-React 19 and `react-dom` 19 are peer dependencies. The editor chrome is styled
-with [Tailwind CSS 4](https://tailwindcss.com) and
-[daisyUI 5](https://daisyui.com) semantic classes, so the host app needs both,
-and its Tailwind build must scan this package:
+React 19 and `react-dom` 19 are the only peer dependencies. Then load the
+styles one of two ways.
+
+**Without Tailwind or daisyUI.** Import the self-contained stylesheet. Nothing
+else is needed:
+
+```ts
+import "email-visual-builder/standalone.css";
+```
+
+Every rule in it is confined to the editor, so it does not restyle your page,
+and none of your classes need to match its names. It is about 23 kB gzipped.
+
+**With Tailwind CSS 4 and daisyUI 5.** If your app already runs both, let them
+style the editor so it shares your theme, and import only the editor chrome:
 
 ```css
 @import "tailwindcss";
@@ -41,14 +52,17 @@ and its Tailwind build must scan this package:
 @import "email-visual-builder/styles.css";
 ```
 
+Use one or the other, not both.
+
 ## Entry points
 
-| Import                            | Contents                                                                              | React/DOM |
-| --------------------------------- | ------------------------------------------------------------------------------------- | --------- |
-| `email-visual-builder/core`       | Document types, parsing, migrations, registries, commands, the controller, validation | No        |
-| `email-visual-builder/renderers`  | Email and landing-page HTML export                                                    | No        |
-| `email-visual-builder/react`      | Provider, editor UI, presets, rich-text adapter                                       | Yes       |
-| `email-visual-builder/styles.css` | Editor chrome styles                                                                  | —         |
+| Import                                | Contents                                                                              | React/DOM |
+| ------------------------------------- | ------------------------------------------------------------------------------------- | --------- |
+| `email-visual-builder/core`           | Document types, parsing, migrations, registries, commands, the controller, validation | No        |
+| `email-visual-builder/renderers`      | Email and landing-page HTML export                                                    | No        |
+| `email-visual-builder/react`          | Provider, editor UI, presets, rich-text adapter                                       | Yes       |
+| `email-visual-builder/styles.css`     | Editor chrome styles                                                                  | —         |
+| `email-visual-builder/standalone.css` | Everything the editor needs, for hosts without Tailwind and daisyUI                   | —         |
 
 ## Usage
 
@@ -309,10 +323,25 @@ Every string in the editor comes from a label. Override any subset:
 
 ### Theming
 
-The editor uses daisyUI semantic tokens (`base-100`, `base-content`, `primary`
-and so on), so it follows whatever daisyUI theme the host page sets, light or
-dark. Colors an author picks for the email itself are stored in the document
-and are never affected by the host theme.
+The editor is drawn with semantic color tokens (`--color-base-100`,
+`--color-base-content`, `--color-primary` and so on).
+
+- With `standalone.css` it ships a light and a dark theme. Set
+  `data-theme="dark"` on any ancestor, such as `<html>`, to switch. To match
+  your brand, override the tokens on `.donativus-vb-scope`:
+
+  ```css
+  .donativus-vb-scope {
+    --color-primary: #e75480;
+    --color-primary-content: #ffffff;
+    --radius-field: 0.5rem;
+  }
+  ```
+
+- With your own daisyUI build it follows whatever theme your page sets.
+
+Colors an author picks for the email itself are stored in the document and are
+never affected by the host theme.
 
 ### Building your own editor
 
@@ -387,6 +416,7 @@ pnpm test          # node:test through tsx
 pnpm check-types
 pnpm build
 pnpm storybook     # interactive editor at http://localhost:6007
+pnpm sandbox       # the editor in a page with no Tailwind or daisyUI
 ```
 
 ## License
