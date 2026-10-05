@@ -144,6 +144,195 @@ validates before rendering, and returns `errors` and `warnings` instead of
 throwing. Run it on the server against what the client submitted rather than
 trusting HTML produced in the browser.
 
+## Guide
+
+### How it fits together
+
+1. The **document** is plain JSON: a flat map of nodes with a root, a mode
+   (`email` or `landing-page`), and settings. This is what you store.
+2. The **controller** holds a document in memory. Every edit is a validated
+   command, so the document can never reach a state the parser would reject,
+   and undo/redo comes for free.
+3. The **editor** is a React UI bound to a controller.
+4. The **renderer** turns a document into HTML. It never reads the editor.
+
+Store the JSON as the source of truth and render HTML from it when you send.
+Do not store HTML and try to edit it later.
+
+### Saving and loading
+
+```ts
+// Save: validate and serialize what the editor holds.
+const result = controller.export();
+if (result.errors.length === 0) {
+  await api.save({ document: result.json, html: result.html });
+}
+
+// Load: parse what you stored, then hand it to a controller.
+const parsed = parseVisualDocument(JSON.parse(stored), registries);
+if (parsed.ok) controller.loadDocument(parsed.value);
+```
+
+`controller.subscribe(listener)` fires on every change, which is the place to
+track unsaved changes. `controller.undo()`, `redo()`, `canUndo()` and
+`canRedo()` drive your own history buttons if you are not using the built-in
+toolbar.
+
+### Blocks
+
+| Block       | Purpose                                                    |
+| ----------- | ---------------------------------------------------------- |
+| `section`   | A full-width band with background, padding and width       |
+| `columns`   | Side-by-side columns that stack on narrow screens          |
+| `heading`   | A heading, levels 1 to 6                                   |
+| `rich-text` | Paragraphs, lists, links, inline color and font, variables |
+| `image`     | An image, uploaded or by URL, optionally linked            |
+| `cta`       | A button with a destination                                |
+| `divider`   | A horizontal rule                                          |
+| `spacer`    | Vertical space                                             |
+| `social`    | A row of social profile icons                              |
+
+Blocks obey structural rules: the document holds sections, and a section holds
+content blocks or columns. The editor will not let an author drop a block where it is not allowed,
+and the parser rejects a stored document that breaks the rules.
+
+### Variables
+
+A variable is a placeholder your sending system replaces per recipient. The
+builder treats it as one atomic token: an author cannot half-delete it or
+mistype it, and the export writes the exact `token` you configured.
+
+```ts
+const variables: VariableDefinition[] = [
+  {
+    key: "recipient.firstName",
+    token: "%recipient.firstName%",
+    label: "Recipient first name",
+    sampleValue: "Alex",
+    allowedContexts: ["text"],
+  },
+  {
+    key: "unsubscribe_url",
+    token: "%unsubscribe_url%",
+    label: "Unsubscribe link",
+    allowedContexts: ["url", "email-system-link"],
+  },
+];
+```
+
+`allowedContexts` decides where a variable is offered:
+
+| Context             | Offered in                               |
+| ------------------- | ---------------------------------------- |
+| `text`              | Headings, rich text, button labels       |
+| `url`               | Link and button destinations             |
+| `image-url`         | Image sources                            |
+| `email-system-link` | Links the email must carry, e.g. opt-out |
+
+`sampleValue` is what the editor shows when the author turns on sample values.
+The token syntax is yours to choose; the builder never substitutes values.
+
+### Images
+
+The builder does not know where your files live. Pass an `assetAdapter` and it
+calls you with the file to upload:
+
+```ts
+const assetAdapter: AssetAdapter = {
+  maxImageBytes: 1024 * 1024,
+  async uploadImage(file, context) {
+    const response = await uploadToYourStorage(file);
+    if (!response.ok) return { ok: false, error: "Upload failed. Try again." };
+    return {
+      ok: true,
+      asset: {
+        url: response.url,
+        filename: file.name,
+        mimeType: file.type,
+      },
+    };
+  },
+};
+```
+
+Return `{ ok: false }` for expected failures instead of throwing, so the author
+can retry. Every upload must produce a new URL: undo restores the previous
+asset, so the old URL has to keep working. Without an adapter, authors can
+still set an image by pasting its URL.
+
+Authors can crop, rotate and resize an image before it is uploaded.
+
+### Email metadata
+
+`EmailVisualBuilder` frames the canvas as a message window. Sender, subject and
+template name are yours; the builder only displays and edits them.
+
+```tsx
+<EmailVisualBuilder
+  controller={controller}
+  registries={registries}
+  variables={variables}
+  assetAdapter={assetAdapter}
+  templateName={name}
+  onTemplateNameChange={setName}
+  senderName="Donativus"
+  senderEmail="hello@donativus.com"
+  subject={subject}
+  onSubjectChange={setSubject}
+  hasUnsavedChanges={dirty}
+  toolbarActions={<button onClick={save}>Save</button>}
+/>
+```
+
+### Layout
+
+The editor adapts to the width of its container, not the window. Below 900px
+the side panels collapse into toggles. Force one with `layout="wide"` or
+`layout="narrow"`; the default is `"auto"`.
+
+### Translations
+
+Every string in the editor comes from a label. Override any subset:
+
+```tsx
+<EmailVisualBuilder
+  controller={controller}
+  labels={{ formatBold: "Negrita", addVariable: "Añadir variable" }}
+/>
+```
+
+`DEFAULT_BUILDER_LABELS` lists every key with its English default.
+
+### Theming
+
+The editor uses daisyUI semantic tokens (`base-100`, `base-content`, `primary`
+and so on), so it follows whatever daisyUI theme the host page sets, light or
+dark. Colors an author picks for the email itself are stored in the document
+and are never affected by the host theme.
+
+### Building your own editor
+
+The presets are assembled from exported parts. Compose them yourself when you
+need a different arrangement:
+
+```tsx
+<BuilderProvider controller={controller} mode="email" registries={registries}>
+  <Toolbar />
+  <Workspace library={<BlockLibrary />} inspector={<Inspector />}>
+    <Canvas />
+  </Workspace>
+</BuilderProvider>
+```
+
+`useBuilderSelector`, `useNode`, `useSelectedNodeId` and `useNodeActions` read
+and change the document from your own components.
+
+### Importing from Unlayer
+
+`importUnlayerEmailDesign(design)` converts the supported subset of an Unlayer
+email design into a document. Unsupported tools are reported in `warnings`
+rather than carried over as raw HTML.
+
 ## Fonts
 
 Font choices are system font stacks only. No font file is ever fetched, so an
@@ -174,6 +363,17 @@ carries `kind: "donativus.rich-text"`. These are stable format identifiers, kept
 for compatibility with documents saved by [Donativus](https://donativus.com),
 the fundraising platform by [Aatsin](https://aatsin.com) this package was
 extracted from. CSS classes use the `donativus-vb-` prefix for the same reason.
+
+## Used by
+
+<p>
+  <a href="https://donativus.com"><img src="./docs/assets/donativus.png" alt="Donativus" height="48"></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://circuitius.com"><img src="./docs/assets/circuitius.png" alt="Circuitius" height="48"></a>
+</p>
+
+Built and maintained with the support of [Aatsin](https://aatsin.com). Using
+it in production? Open a pull request to add your project.
 
 ## Development
 
