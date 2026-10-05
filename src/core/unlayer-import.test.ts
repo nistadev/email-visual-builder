@@ -576,7 +576,7 @@ test.describe("importUnlayerEmailDesign", () => {
                         name: "web",
                         attrs: { href: "{{href}}", target: "{{target}}" },
                         values: {
-                          href: "https://donate.example.org/doneaza/",
+                          href: "https://donativus.com/doneaza/",
                           target: "_blank",
                         },
                       },
@@ -594,7 +594,7 @@ test.describe("importUnlayerEmailDesign", () => {
     assert.equal(result.ok, true);
     if (!result.ok) return;
     const serialized = JSON.stringify(result.value.nodes);
-    assert.match(serialized, /https:\/\/donate\.example\.org\/doneaza\//);
+    assert.match(serialized, /https:\/\/donativus\.com\/doneaza\//);
     assert.doesNotMatch(serialized, /\{\{href\}\}/);
     assert.deepEqual(
       result.warnings.filter((entry) => /unsafe legacy link/i.test(entry)),
@@ -628,21 +628,21 @@ test.describe("importUnlayerEmailDesign", () => {
                       icons: {
                         icons: [
                           {
-                            url: "https://www.instagram.com/exampleorg",
+                            url: "https://www.instagram.com/donativus",
                             name: "Instagram",
                           },
                           {
-                            url: "https://www.tiktok.com/@exampleorg",
+                            url: "https://www.tiktok.com/@donativus",
                             name: "TikTok",
                           },
                           {
                             // Predates the X rebrand — still seen in older templates.
-                            url: "https://twitter.com/exampleorg",
+                            url: "https://twitter.com/donativus",
                             name: "Twitter",
                           },
                           {
                             // Unrecognized legacy platform: dropped, not guessed at.
-                            url: "https://plus.google.com/exampleorg",
+                            url: "https://plus.google.com/donativus",
                             name: "Google+",
                           },
                         ],
@@ -669,17 +669,17 @@ test.describe("importUnlayerEmailDesign", () => {
       {
         id: "unlayer-social-item-1",
         platform: "instagram",
-        url: "https://www.instagram.com/exampleorg",
+        url: "https://www.instagram.com/donativus",
       },
       {
         id: "unlayer-social-item-2",
         platform: "tiktok",
-        url: "https://www.tiktok.com/@exampleorg",
+        url: "https://www.tiktok.com/@donativus",
       },
       {
         id: "unlayer-social-item-3",
         platform: "x",
-        url: "https://twitter.com/exampleorg",
+        url: "https://twitter.com/donativus",
       },
     ]);
     assert.equal(social?.props.iconStyle, "filled");

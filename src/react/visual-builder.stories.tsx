@@ -321,7 +321,7 @@ function EmailStory({
     () => createDemoController("email", registries),
     [registries],
   );
-  const [senderName, setSenderName] = useState("Acme Foundation");
+  const [senderName, setSenderName] = useState("Donativus");
   const [subject, setSubject] = useState("A little goes a long way");
   return (
     <div style={{ height: "100vh" }}>
@@ -332,7 +332,7 @@ function EmailStory({
         layout={layout}
         assetAdapter={assetAdapter}
         senderName={senderName}
-        senderEmail="hello@example.org"
+        senderEmail="hello@donativus.com"
         subject={subject}
         onSenderNameChange={setSenderName}
         onSubjectChange={setSubject}

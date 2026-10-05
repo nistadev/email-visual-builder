@@ -171,7 +171,8 @@ rather than claiming identical output in every client.
 
 Stored documents carry `kind: "donativus.visual-document"` and rich text
 carries `kind: "donativus.rich-text"`. These are stable format identifiers, kept
-for compatibility with documents saved by the project this package was
+for compatibility with documents saved by [Donativus](https://donativus.com),
+the fundraising platform by [Aatsin](https://aatsin.com) this package was
 extracted from. CSS classes use the `donativus-vb-` prefix for the same reason.
 
 ## Development
