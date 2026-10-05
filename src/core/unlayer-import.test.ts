@@ -576,7 +576,7 @@ test.describe("importUnlayerEmailDesign", () => {
                         name: "web",
                         attrs: { href: "{{href}}", target: "{{target}}" },
                         values: {
-                          href: "https://donativus.com/doneaza/",
+                          href: "https://donativus.com/",
                           target: "_blank",
                         },
                       },
@@ -594,7 +594,7 @@ test.describe("importUnlayerEmailDesign", () => {
     assert.equal(result.ok, true);
     if (!result.ok) return;
     const serialized = JSON.stringify(result.value.nodes);
-    assert.match(serialized, /https:\/\/donativus\.com\/doneaza\//);
+    assert.match(serialized, /https:\/\/donativus\.com\//);
     assert.doesNotMatch(serialized, /\{\{href\}\}/);
     assert.deepEqual(
       result.warnings.filter((entry) => /unsafe legacy link/i.test(entry)),
