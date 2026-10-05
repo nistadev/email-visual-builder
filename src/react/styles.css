@@ -1,0 +1,2201 @@
+/* email-visual-builder/styles.css — editor-chrome structure where
+   daisyUI utility classes alone are insufficient. Colors and radii come from
+   daisyUI semantic tokens (var(--color-*, ...)) so tenant light/dark themes
+   stay correct; user-authored colors only ever appear as inline styles
+   inside `.donativus-vb-authored` (design.md decision #13). */
+
+.donativus-vb-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-box);
+  background: var(--color-base-100);
+}
+
+.donativus-vb-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Toolbar */
+.donativus-vb-toolbar {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-base-300);
+  flex-wrap: wrap;
+  box-shadow: 0 1px 0
+    color-mix(in oklab, var(--color-base-content) 5%, transparent);
+  z-index: 5;
+}
+
+.donativus-vb-toolbar .btn {
+  gap: 0.375rem;
+}
+
+.donativus-vb-toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.donativus-vb-toolbar-title-input {
+  min-width: 8rem;
+  max-width: 18rem;
+  flex: 0 1 auto;
+  font-weight: 600;
+}
+
+/* Workspace panes */
+.donativus-vb-workspace {
+  display: grid;
+  grid-template-columns: minmax(13rem, 15rem) minmax(0, 1fr) minmax(
+      18rem,
+      20rem
+    );
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+}
+
+.donativus-vb-workspace.is-narrow {
+  display: flex;
+  flex-direction: column;
+}
+
+.donativus-vb-left-rail,
+.donativus-vb-right-rail {
+  min-height: 0;
+}
+
+.donativus-vb-left-rail {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid var(--color-base-300);
+  padding: 0.5rem;
+}
+
+.donativus-vb-left-column {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.donativus-vb-library-rail {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.donativus-vb-sidebar-status {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 0.375rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-base-300);
+}
+
+.donativus-vb-sidebar-status-notice {
+  min-width: 0;
+  text-align: left;
+}
+
+.donativus-vb-narrow-status-notice {
+  display: none;
+}
+
+.donativus-vb-workspace.is-narrow .donativus-vb-narrow-status-notice {
+  display: block;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--color-base-300);
+}
+
+.donativus-vb-workspace.is-narrow .donativus-vb-sidebar-status-notice {
+  display: none;
+}
+
+.donativus-vb-right-rail {
+  overflow-y: auto;
+  border-left: 1px solid var(--color-base-300);
+  min-width: 0;
+}
+
+.donativus-vb-center {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+}
+
+.donativus-vb-narrow-bar {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-bottom: 1px solid var(--color-base-300);
+}
+
+.donativus-vb-narrow-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.donativus-vb-narrow-content.has-inline-sidebar {
+  grid-template-columns: minmax(13rem, 15rem) minmax(0, 1fr);
+}
+
+.donativus-vb-narrow-content.has-inline-sidebar-inspector {
+  grid-template-columns: minmax(0, 1fr) minmax(13rem, 15rem);
+}
+
+.donativus-vb-inline-sidebar {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.donativus-vb-inline-sidebar.is-left {
+  border-right: 1px solid var(--color-base-300);
+}
+
+.donativus-vb-inline-sidebar.is-right {
+  border-left: 1px solid var(--color-base-300);
+}
+
+/* Email composer shell */
+.donativus-vb-email-composer {
+  --donativus-vb-email-composer-gutter: 1.5rem;
+
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-self: center;
+  width: min(
+    var(--donativus-vb-email-composer-viewport-width, 100%),
+    calc(100% - var(--donativus-vb-email-composer-gutter))
+  );
+  min-width: 0;
+  min-height: 0;
+  margin: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--color-base-300);
+  background: var(--color-base-200);
+  border-radius: calc(var(--radius-box) + var(--radius-field));
+  transition: width 180ms ease;
+  box-shadow:
+    0 1px 2px color-mix(in oklab, var(--color-base-content) 8%, transparent),
+    0 18px 44px color-mix(in oklab, var(--color-base-content) 10%, transparent);
+}
+
+.donativus-vb-email-composer-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.375rem 0.75rem;
+  border-bottom: 1px solid var(--color-base-300);
+  background: var(--color-base-300);
+}
+
+.donativus-vb-email-composer-header strong {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.donativus-vb-email-composer-header-actions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 0.125rem;
+}
+
+.donativus-vb-email-composer-header-actions > .badge {
+  justify-self: end;
+}
+
+.donativus-vb-email-window-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  justify-self: start;
+}
+
+.donativus-vb-email-window-controls > span {
+  inline-size: 0.6875rem;
+  block-size: 0.6875rem;
+  border: 1px solid
+    color-mix(in oklab, var(--color-base-content) 14%, transparent);
+  border-radius: 50%;
+}
+
+.donativus-vb-email-window-controls > span:nth-child(1) {
+  background: var(--color-error);
+}
+
+.donativus-vb-email-window-controls > span:nth-child(2) {
+  background: var(--color-warning);
+}
+
+.donativus-vb-email-window-controls > span:nth-child(3) {
+  background: var(--color-success);
+}
+
+.donativus-vb-email-composer-fields {
+  flex: 0 0 auto;
+  padding: 0 0.875rem;
+  border-bottom: 1px solid var(--color-base-300);
+  background: color-mix(
+    in oklab,
+    var(--color-base-200) 82%,
+    var(--color-base-100)
+  );
+}
+
+.donativus-vb-email-composer-field {
+  display: grid;
+  grid-template-columns: 4.25rem minmax(0, 1fr);
+  align-items: center;
+  min-height: 2.375rem;
+  border-bottom: 1px solid
+    color-mix(in oklab, var(--color-base-300) 72%, transparent);
+}
+
+.donativus-vb-email-composer-field:last-child {
+  border-bottom: 0;
+}
+
+.donativus-vb-email-composer-field-label {
+  font-size: 0.75rem;
+  font-weight: 650;
+  color: color-mix(in oklab, var(--color-base-content) 58%, transparent);
+}
+
+.donativus-vb-email-composer-value,
+.donativus-vb-email-composer-input {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-base-content);
+  font-size: 0.8125rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.donativus-vb-email-composer-subject-line {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.donativus-vb-email-composer-subject-line > .donativus-vb-email-composer-input,
+.donativus-vb-email-composer-subject-line > .donativus-vb-email-composer-value {
+  width: min-content;
+  max-width: 100%;
+  min-width: 4rem;
+  flex: 0 1 auto;
+}
+
+.donativus-vb-email-composer-subject-line > .donativus-vb-email-composer-input {
+  field-sizing: content;
+  padding-inline-end: 0.25rem;
+}
+
+.donativus-vb-email-composer-preview-text {
+  min-width: 0;
+  max-width: 52%;
+  flex: 0 1 auto;
+  overflow: hidden;
+  color: color-mix(in oklab, var(--color-base-content) 52%, transparent);
+  font-size: 0.8125rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.donativus-vb-email-composer-sender {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.donativus-vb-email-composer-sender .donativus-vb-email-composer-input {
+  width: auto;
+  min-width: 4rem;
+  flex: 0 1 auto;
+}
+
+.donativus-vb-email-composer-email {
+  min-width: 0;
+  overflow: hidden;
+  color: color-mix(in oklab, var(--color-base-content) 58%, transparent);
+  font-size: 0.8125rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.donativus-vb-email-composer-input {
+  width: 100%;
+  padding: 0.25rem 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+}
+
+.donativus-vb-email-composer-input:focus-visible {
+  box-shadow: inset 0 -2px 0 var(--color-primary);
+}
+
+.donativus-vb-email-composer-body {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.donativus-vb-email-composer-body > .donativus-vb-canvas {
+  padding: 0;
+}
+
+/* Canvas */
+.donativus-vb-canvas {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background-color: var(--color-base-200);
+}
+
+.donativus-vb-page {
+  display: flex;
+  max-width: 100%;
+  align-items: flex-start;
+  transition: width 180ms ease;
+}
+
+.donativus-vb-sections-canvas {
+  box-shadow:
+    0 1px 2px color-mix(in oklab, var(--color-base-content) 10%, transparent),
+    0 18px 48px color-mix(in oklab, var(--color-base-content) 12%, transparent);
+  border: 1px solid
+    color-mix(in oklab, var(--color-base-content) 10%, transparent);
+  border-radius: var(--radius-box);
+  overflow: visible;
+  transition: max-width 180ms ease;
+}
+
+.donativus-vb-email-composer .donativus-vb-sections-canvas {
+  box-shadow: none;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+
+/* Canvas node chrome */
+.donativus-vb-canvas-node {
+  position: relative;
+  /* Reserve a stable chrome gutter: the frame never touches content or a
+     neighbouring block, including zero-padding nodes such as dividers. */
+  margin: 2px;
+  padding: 2px;
+  cursor: grab;
+}
+
+.donativus-vb-canvas-node.is-hovered::after,
+.donativus-vb-canvas-node.is-selected::after,
+.donativus-vb-canvas-node:focus-visible::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.donativus-vb-canvas-node.is-hovered::after {
+  border: 1px dashed var(--color-primary);
+}
+
+.donativus-vb-canvas-node.is-selected::after,
+.donativus-vb-canvas-node:focus-visible::after {
+  border: 2px solid var(--color-primary);
+}
+
+.donativus-vb-canvas-node.is-dragging {
+  opacity: 0.4;
+  cursor: grabbing;
+}
+
+.donativus-vb-canvas-node:focus-visible {
+  outline: none;
+}
+
+/* A pointer-following label makes nested canvas layers distinguishable before
+   selection. It lives in a body portal, so canvas scrolling and overflow
+   never clip it, and it cannot intercept the click that selects the layer. */
+.donativus-vb-canvas-hover-tooltip {
+  position: fixed;
+  z-index: 40;
+  max-width: min(18rem, calc(100vw - 1rem));
+  overflow: hidden;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-field);
+  box-shadow: 0 4px 12px
+    color-mix(in oklab, var(--color-base-content) 18%, transparent);
+  color: var(--color-base-content);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.25;
+  pointer-events: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.donativus-vb-node-chrome-bar {
+  position: absolute;
+  bottom: calc(100% + 0.25rem);
+  right: 0.375rem;
+  display: inline-flex;
+  gap: 0.25rem;
+  z-index: 10;
+  filter: drop-shadow(
+    0 2px 4px color-mix(in oklab, var(--color-base-content) 16%, transparent)
+  );
+}
+
+.donativus-vb-drag-handle {
+  cursor: grab;
+  gap: 0.125rem;
+}
+
+.donativus-vb-node-actions .btn,
+.donativus-vb-drag-handle {
+  background: var(--color-base-100);
+  border-color: var(--color-base-300);
+}
+
+/* Columns preview layout */
+.donativus-vb-canvas-columns {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.donativus-vb-canvas-column-slot {
+  min-width: 0;
+  min-height: 0;
+  border: 1px dashed
+    color-mix(in oklab, var(--color-base-content) 18%, transparent);
+  border-radius: var(--radius-field);
+}
+
+/* The canvas is scaled to the selected device width rather than placed in an
+   iframe, so mirror the renderer's 480px email stacking rule here. */
+.donativus-vb-canvas[data-vb-preview-device="mobile"]
+  .donativus-vb-canvas-columns[data-vb-responsive-stack="stack"] {
+  flex-direction: column;
+}
+
+.donativus-vb-canvas[data-vb-preview-device="mobile"]
+  .donativus-vb-canvas-columns[data-vb-responsive-stack="stack"]
+  > .donativus-vb-canvas-column-slot {
+  flex: 0 0 auto !important;
+  width: 100%;
+}
+
+/* Drop slots */
+.donativus-vb-drop-slot {
+  height: 0;
+  margin: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  border-radius: 2px;
+  transition:
+    opacity 80ms linear,
+    background-color 80ms linear;
+}
+
+.donativus-vb-drop-slot.is-active,
+.donativus-vb-drop-slot.is-denied {
+  height: 0.375rem;
+  margin: 0.125rem 0;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.donativus-vb-drop-slot.is-active {
+  background: color-mix(in oklab, var(--color-primary) 30%, transparent);
+}
+
+.donativus-vb-drop-slot.is-over {
+  background: var(--color-primary);
+}
+
+.donativus-vb-drop-slot.is-denied {
+  background: repeating-linear-gradient(
+    45deg,
+    color-mix(in oklab, var(--color-error) 25%, transparent),
+    color-mix(in oklab, var(--color-error) 25%, transparent) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+
+.donativus-vb-drop-slot.is-fill {
+  position: absolute;
+  inset: 0;
+  height: auto;
+  margin: 0;
+}
+
+.donativus-vb-drop-slot.is-fill.is-active,
+.donativus-vb-drop-slot.is-fill.is-denied {
+  opacity: 1;
+}
+
+/* Empty containers & placeholders */
+.donativus-vb-empty-container {
+  position: relative;
+  min-height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--color-base-300);
+  border-radius: var(--radius-field);
+  background: color-mix(in oklab, var(--color-base-200) 58%, transparent);
+}
+
+.donativus-vb-empty-hint {
+  font-size: 0.8125rem;
+  opacity: 0.65;
+  padding: 0.25rem;
+  text-align: center;
+}
+
+.donativus-vb-unsupported-block {
+  border: 1px dashed var(--color-warning);
+  border-radius: var(--radius-field);
+  padding: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.donativus-vb-image-placeholder {
+  display: inline-grid;
+  min-height: 8rem;
+  place-items: center;
+  border: 1px dashed var(--color-base-300);
+  border-radius: var(--radius-field);
+  color: color-mix(in oklab, var(--color-base-content) 42%, transparent);
+  background: var(--color-base-200);
+}
+
+.donativus-vb-image-placeholder-icon {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  place-items: center;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-field);
+  background: color-mix(
+    in oklab,
+    var(--color-base-100) 72%,
+    var(--color-base-200)
+  );
+  box-shadow: 0 2px 8px
+    color-mix(in oklab, var(--color-base-content) 7%, transparent);
+}
+
+/* Variable chips (canvas + rich text) */
+.donativus-vb-variable-chip {
+  display: inline-block;
+  padding: 0 0.25rem;
+  border-radius: var(--radius-selector);
+  background: color-mix(
+    in oklab,
+    var(--color-primary) 14%,
+    var(--color-base-100)
+  );
+  border: 1px solid
+    color-mix(in oklab, var(--color-primary) 38%, var(--color-base-300));
+  color: var(--color-base-content);
+  font-size: 0.85em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: nowrap;
+}
+
+.donativus-vb-canvas-link,
+.donativus-vb-rich-text-content a,
+.donativus-vb-rich-text-link {
+  color: var(--donativus-vb-link-color, currentColor);
+  text-decoration: var(--donativus-vb-link-text-decoration, underline);
+}
+
+.donativus-vb-rich-text-bold {
+  font-weight: 700;
+}
+
+.donativus-vb-rich-text-italic {
+  font-style: italic;
+}
+
+.donativus-vb-rich-text-underline {
+  text-decoration-line: underline;
+}
+
+.donativus-vb-rich-text-strikethrough {
+  text-decoration-line: line-through;
+}
+
+.donativus-vb-rich-text-underline-strikethrough {
+  text-decoration-line: underline line-through;
+}
+
+/* Library & layers */
+.donativus-vb-block-library,
+.donativus-vb-layers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.375rem 0;
+}
+
+.donativus-vb-library-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.375rem;
+}
+
+.donativus-vb-library-item {
+  min-height: 2.75rem;
+  height: auto;
+  padding: 0.25rem 0.375rem;
+  border-color: var(--color-base-300);
+  background: var(--color-base-100);
+  font-weight: 550;
+  cursor: grab;
+}
+
+.donativus-vb-library-item:hover {
+  border-color: color-mix(
+    in oklab,
+    var(--color-primary) 45%,
+    var(--color-base-300)
+  );
+  background: color-mix(
+    in oklab,
+    var(--color-primary) 6%,
+    var(--color-base-100)
+  );
+}
+
+.donativus-vb-library-icon {
+  display: grid;
+  place-items: center;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  flex: none;
+  border-radius: var(--radius-field);
+  background: var(--color-base-200);
+}
+
+.donativus-vb-library-item-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.donativus-vb-library-grip {
+  margin-inline-start: auto;
+  opacity: 0.35;
+}
+
+.donativus-vb-layers-tree {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.donativus-vb-layers-tree ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.donativus-vb-layer-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.25rem;
+  min-height: 2rem;
+  border-radius: var(--radius-field);
+  cursor: pointer;
+  font-size: 0.8125rem;
+}
+
+.donativus-vb-layer-item.is-selected {
+  background: color-mix(in oklab, var(--color-primary) 15%, transparent);
+}
+
+.donativus-vb-layer-item.is-filtered-out {
+  opacity: 0.35;
+}
+
+.donativus-vb-layer-item:focus-visible {
+  outline: 2px solid var(--color-primary);
+}
+
+.donativus-vb-layer-name {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Inspector */
+.donativus-vb-inspector {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 0.875rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.donativus-vb-inspector-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+}
+
+.donativus-vb-inspector-group {
+  min-width: 0;
+  border-bottom: 1px solid var(--color-base-300);
+  padding: 0.375rem 0;
+}
+
+.donativus-vb-inspector-group-title {
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.375rem 0;
+  letter-spacing: 0.01em;
+}
+
+.donativus-vb-inspector-group-body {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.25rem 0 0.5rem;
+}
+
+.donativus-vb-field {
+  min-width: 0;
+}
+
+.donativus-vb-inspector .input,
+.donativus-vb-inspector .select,
+.donativus-vb-inspector .textarea {
+  max-width: 100%;
+}
+
+.donativus-vb-field .label {
+  font-size: 0.75rem;
+  padding-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.375rem;
+}
+
+.donativus-vb-field-help {
+  margin-inline-start: 0.25rem;
+  cursor: help;
+  color: color-mix(in oklab, var(--color-base-content) 58%, transparent);
+}
+
+.donativus-vb-field-help.tooltip::before {
+  width: 14rem;
+  max-width: calc(100vw - 2rem);
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: start;
+}
+
+.donativus-vb-segmented-control .btn {
+  min-width: 2.5rem;
+}
+
+.donativus-vb-unit-field {
+  display: flex;
+  width: 100%;
+}
+
+.donativus-vb-unit-field .input {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.donativus-vb-unit-select {
+  width: 4.75rem;
+  flex: 0 0 auto;
+}
+
+.donativus-vb-field-error {
+  font-size: 0.75rem;
+  margin: 0.125rem 0 0;
+}
+
+.donativus-vb-spacing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.375rem;
+}
+
+.donativus-vb-spacing-fields,
+.donativus-vb-typography-fields,
+.donativus-vb-shadow-fields {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.donativus-vb-shadow-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.375rem;
+}
+
+.donativus-vb-shadow-grid > :last-child {
+  grid-column: 1 / -1;
+}
+
+.donativus-vb-spacing-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.donativus-vb-spacing-header .label {
+  padding: 0;
+  font-size: 0.75rem;
+}
+
+.donativus-vb-typography-family-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.5rem;
+}
+
+.donativus-vb-font-weight-control {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.donativus-vb-font-weight-control .btn {
+  flex: 1 1 auto;
+}
+
+.donativus-vb-column-widths {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.375rem;
+}
+
+.donativus-vb-field-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.donativus-vb-field-row > .donativus-vb-field {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.donativus-vb-social-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.donativus-vb-social-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.donativus-vb-social-item .select {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+.donativus-vb-social-item .input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.donativus-vb-color-input {
+  inline-size: 3rem;
+  block-size: 2rem;
+  padding: 0;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-field);
+  background: none;
+}
+
+/* Validation review overlay */
+.donativus-vb-panel {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: min(26rem, calc(100% - 1rem));
+  max-height: calc(100% - 1rem);
+  overflow-y: auto;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-box);
+  box-shadow: 0 8px 30px
+    color-mix(in oklab, var(--color-base-content) 18%, transparent);
+  padding: 0.5rem 0.75rem;
+  z-index: 20;
+}
+
+.donativus-vb-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.donativus-vb-panel-header h2 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.donativus-vb-issue-heading {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.donativus-vb-issue-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.donativus-vb-issue-message {
+  flex: 1 1 auto;
+  text-align: start;
+  white-space: normal;
+}
+
+/* Fullscreen document preview */
+.donativus-vb-preview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: color-mix(in oklab, var(--color-base-content) 55%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.donativus-vb-preview-modal {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.donativus-vb-preview-header {
+  min-width: 0;
+  min-height: 4rem;
+  padding: 0.625rem 1rem;
+  border-bottom: 1px solid var(--color-base-300);
+  display: grid;
+  grid-template-columns: minmax(10rem, 1fr) auto minmax(10rem, 1fr);
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 1px 0
+    color-mix(in oklab, var(--color-base-content) 6%, transparent);
+}
+
+.donativus-vb-preview-heading {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.donativus-vb-preview-heading h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.donativus-vb-preview-device-picker {
+  justify-self: center;
+}
+
+.donativus-vb-preview-device-picker .btn {
+  gap: 0.375rem;
+}
+
+.donativus-vb-preview-actions {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.donativus-vb-preview-debug-actions {
+  display: flex;
+  align-items: center;
+}
+
+.donativus-vb-preview-stage {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0.75rem;
+  display: grid;
+  place-items: start center;
+  background-color: var(--color-base-200);
+  background-image:
+    linear-gradient(
+      color-mix(in oklab, var(--color-base-content) 4%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--color-base-content) 4%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 24px 24px;
+}
+
+.donativus-vb-preview-device {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  flex: none;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  max-height: 100%;
+  height: min(
+    calc(var(--donativus-vb-preview-device-height, 0px) + 2.125rem),
+    100%
+  );
+  overflow: hidden;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-box);
+  box-shadow:
+    0 1px 2px color-mix(in oklab, var(--color-base-content) 12%, transparent),
+    0 24px 64px color-mix(in oklab, var(--color-base-content) 18%, transparent);
+  transition: width 220ms ease;
+}
+
+.donativus-vb-preview-device-bar {
+  height: 2.125rem;
+  padding: 0 0.75rem;
+  border-bottom: 1px solid var(--color-base-300);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.6875rem;
+  color: color-mix(in oklab, var(--color-base-content) 62%, transparent);
+}
+
+.donativus-vb-preview-device-bar strong {
+  color: var(--color-base-content);
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.donativus-vb-preview-device-bar span:last-child {
+  justify-self: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.donativus-vb-preview-frame {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  max-width: none;
+  border: 0;
+  background: var(--color-base-100);
+}
+
+.donativus-vb-preview-empty {
+  align-self: center;
+  width: min(32rem, 100%);
+  padding: 2rem;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-box);
+  text-align: center;
+  box-shadow: 0 12px 36px
+    color-mix(in oklab, var(--color-base-content) 10%, transparent);
+}
+
+.donativus-vb-preview-empty p {
+  margin: 0;
+}
+
+.donativus-vb-preview-source {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: min(72rem, 100%);
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-box);
+  box-shadow:
+    0 1px 2px color-mix(in oklab, var(--color-base-content) 12%, transparent),
+    0 24px 64px color-mix(in oklab, var(--color-base-content) 18%, transparent);
+}
+
+.donativus-vb-preview-source-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0.625rem 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-base-300);
+  font-size: 0.8125rem;
+}
+
+.donativus-vb-preview-source pre {
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  overflow: auto;
+  padding: 0.875rem;
+  color: var(--color-base-content);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  tab-size: 2;
+}
+
+@media (max-width: 720px) {
+  .donativus-vb-narrow-content.has-inline-sidebar,
+  .donativus-vb-narrow-content.has-inline-sidebar-inspector {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(10rem, 1fr) minmax(24rem, 1fr);
+    overflow: auto;
+  }
+
+  .donativus-vb-inline-sidebar {
+    border-bottom: 1px solid var(--color-base-300);
+  }
+
+  .donativus-vb-inline-sidebar.is-left,
+  .donativus-vb-inline-sidebar.is-right {
+    border-inline: 0;
+  }
+
+  .donativus-vb-inline-sidebar.is-right {
+    order: -1;
+  }
+
+  .donativus-vb-email-composer {
+    --donativus-vb-email-composer-gutter: 1rem;
+
+    margin: 0.5rem;
+  }
+
+  .donativus-vb-email-composer-fields {
+    padding-inline: 0.625rem;
+  }
+
+  .donativus-vb-preview-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.5rem;
+  }
+
+  .donativus-vb-preview-device-picker {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: stretch;
+  }
+
+  .donativus-vb-preview-device-picker .btn {
+    flex: 1 1 0;
+  }
+
+  .donativus-vb-preview-stage {
+    padding: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .donativus-vb-page,
+  .donativus-vb-email-composer,
+  .donativus-vb-sections-canvas,
+  .donativus-vb-preview-device {
+    transition: none;
+  }
+}
+
+/* Rich text editing surface (adapter chrome) */
+.donativus-vb-rich-text-content {
+  min-height: 6rem;
+  padding: 0.375rem;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-field);
+  outline: none;
+}
+
+.donativus-vb-rich-text-content--canvas {
+  min-height: 1em;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  cursor: text;
+  line-height: inherit;
+}
+
+.donativus-vb-rich-text-content--canvas > p {
+  margin: 0 0 12px;
+}
+
+.donativus-vb-inline-rich-text {
+  position: relative;
+  min-width: 0;
+}
+
+.donativus-vb-inline-rich-text.is-inline {
+  display: inline-block;
+  min-width: 1ch;
+  max-width: 100%;
+}
+
+.donativus-vb-rich-text-content--inline {
+  display: inline-block;
+  width: auto;
+  min-width: 1ch;
+  max-width: 100%;
+  white-space: pre-wrap;
+}
+
+.donativus-vb-rich-text-content--inline p {
+  display: inline;
+  margin: 0;
+}
+
+.donativus-vb-rich-text-content--single-line p {
+  text-align: inherit !important;
+}
+
+.donativus-vb-rich-text-content--button-label > p {
+  margin: 0;
+}
+
+.donativus-vb-rich-text-content--inline p + p::before {
+  content: "\A";
+  white-space: pre;
+}
+
+.donativus-vb-variable-insert-control {
+  position: absolute;
+  top: 100%;
+  right: 0.25rem;
+  z-index: 12;
+  width: max-content;
+}
+
+.donativus-vb-variable-insert-control > .btn {
+  gap: 0.125rem;
+  background: var(--color-base-100);
+  border-color: var(--color-base-300);
+}
+
+.donativus-vb-variable-insert-trigger {
+  flex-wrap: nowrap;
+  width: max-content;
+  white-space: nowrap;
+}
+
+/* Portaled to `document.body` and positioned via inline `top`/`left` (see
+   variable-token-menu.tsx) so it never ends up clipped by — or fighting
+   mouse-wheel scroll with — whatever scrollable rail contains the trigger.
+   It flips above the trigger when the lower viewport edge is too close. The
+   search box (when present) stays fixed at the top; only the list below it
+   scrolls, via `.donativus-vb-variable-insert-list`. */
+.donativus-vb-variable-insert-menu {
+  position: fixed;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: min(14rem, calc(100vw - 1rem));
+  max-width: min(22rem, calc(100vw - 1rem));
+  max-height: min(16rem, var(--donativus-vb-variable-menu-room, 16rem));
+  padding: 0.25rem;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-field);
+  box-shadow: 0 8px 24px
+    color-mix(in oklab, var(--color-base-content) 16%, transparent);
+}
+
+.donativus-vb-variable-insert-search {
+  width: 100%;
+  flex: 0 0 auto;
+}
+
+.donativus-vb-variable-insert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.donativus-vb-variable-insert-empty {
+  padding: 0.5rem;
+  color: color-mix(in oklab, var(--color-base-content) 58%, transparent);
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+/* Every entry is a full-width row that wraps onto as many lines as it needs
+   (label + token) rather than shrinking to content width — daisyUI's `.menu`
+   styling targets `li` children, which these plain buttons aren't, so
+   without an explicit width they'd shrink-wrap and flex-wrap into a
+   multi-column grid instead of stacking one per row. */
+.donativus-vb-variable-insert-list .btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 0 0 auto;
+  width: 100%;
+  gap: 0.125rem;
+  height: auto;
+  padding-block: 0.375rem;
+  white-space: normal;
+  text-align: left;
+}
+
+.donativus-vb-variable-insert-list .btn span {
+  overflow-wrap: anywhere;
+}
+
+.donativus-vb-variable-insert-list code {
+  opacity: 0.6;
+  font-size: 0.6875rem;
+  overflow-wrap: anywhere;
+}
+
+.donativus-vb-templated-text-field {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.donativus-vb-templated-text-field .input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.donativus-vb-templated-field-variables {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.donativus-vb-rich-text-toolbar {
+  position: fixed;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.25rem;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-field);
+  box-shadow: 0 8px 24px
+    color-mix(in oklab, var(--color-base-content) 16%, transparent);
+}
+
+.donativus-vb-rich-text-color {
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-selector);
+  background: none;
+  cursor: pointer;
+}
+
+.donativus-vb-rich-text-font {
+  inline-size: 8.5rem;
+  flex: 0 0 auto;
+}
+
+.donativus-vb-rich-text-toolbar.is-above {
+  transform: translate(-50%, -100%);
+}
+
+.donativus-vb-rich-text-toolbar.is-below {
+  transform: translate(-50%, 0);
+}
+
+.donativus-vb-link-inspector {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  right: 0;
+  display: grid;
+  min-width: 15rem;
+  max-width: min(22rem, 70vw);
+  max-height: 14rem;
+  overflow-y: auto;
+  padding: 0.25rem;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-field);
+  box-shadow: 0 8px 24px
+    color-mix(in oklab, var(--color-base-content) 16%, transparent);
+}
+
+.donativus-vb-link-inspector-form {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+}
+
+.donativus-vb-link-inspector-form .input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.donativus-vb-link-variable-picker {
+  flex: 0 0 auto;
+}
+
+.donativus-vb-link-variable-picker .btn {
+  border-color: var(--color-base-300);
+}
+
+.donativus-vb-rich-text-content--canvas:focus-visible {
+  outline: 0;
+  border: 0;
+}
+
+.donativus-vb-spacer-preview {
+  min-height: 0.375rem;
+  background: repeating-linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--color-primary) 8%, transparent),
+    color-mix(in oklab, var(--color-primary) 8%, transparent) 5px,
+    color-mix(in oklab, var(--color-primary) 15%, transparent) 5px,
+    color-mix(in oklab, var(--color-primary) 15%, transparent) 10px
+  );
+}
+
+.donativus-vb-rich-text-content:focus-visible {
+  border-color: var(--color-primary);
+}
+
+.donativus-vb-rich-text-placeholder {
+  opacity: 0.5;
+  pointer-events: none;
+  position: absolute;
+}
+
+/* Drag overlay */
+.donativus-vb-drag-overlay {
+  pointer-events: none;
+}
+
+/* Image source controls + pre-upload editing (tasks 13.1/13.2) */
+.donativus-vb-image-source {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.donativus-vb-image-current {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-width: 0;
+  padding: 0.375rem;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-field);
+  font-size: 0.75rem;
+}
+
+.donativus-vb-image-current img {
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  object-fit: cover;
+  border-radius: var(--radius-selector);
+  background: var(--color-base-300);
+}
+
+.donativus-vb-image-current p {
+  display: grid;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.donativus-vb-image-current-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.donativus-vb-image-current-actions .btn {
+  gap: 0.25rem;
+}
+
+.donativus-vb-image-dimensions {
+  opacity: 0.7;
+}
+
+.donativus-vb-image-uploading {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+}
+
+.donativus-vb-image-error {
+  align-items: center;
+  display: flex;
+  font-size: 0.75rem;
+  gap: 0.5rem;
+  justify-content: space-between;
+  padding: 0.5rem;
+}
+
+/* Visual pre-upload image editor */
+.donativus-vb-image-edit-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: grid;
+  place-items: center;
+  padding: 0.5rem;
+  background: color-mix(in oklab, var(--color-base-content) 62%, transparent);
+  backdrop-filter: blur(5px);
+}
+
+.donativus-vb-image-edit-modal {
+  width: min(72rem, 100%);
+  height: 92vh;
+  max-height: calc(100vh - 1rem);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-box);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  box-shadow:
+    0 2px 8px color-mix(in oklab, var(--color-base-content) 14%, transparent),
+    0 30px 90px color-mix(in oklab, var(--color-base-content) 30%, transparent);
+}
+
+.donativus-vb-image-edit-header,
+.donativus-vb-image-edit-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-width: 0;
+  padding: 0.75rem 1rem;
+  border-color: var(--color-base-300);
+  background: var(--color-base-100);
+  position: relative;
+  z-index: 2;
+}
+
+.donativus-vb-image-edit-header {
+  min-height: 3rem;
+  padding: 0.375rem 0.75rem;
+  border-bottom: 1px solid var(--color-base-300);
+  box-shadow: 0 1px 0
+    color-mix(in oklab, var(--color-base-content) 5%, transparent);
+}
+
+.donativus-vb-image-edit-heading,
+.donativus-vb-image-edit-header-actions,
+.donativus-vb-image-edit-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.donativus-vb-image-edit-heading-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-field);
+}
+
+.donativus-vb-image-edit-heading h2,
+.donativus-vb-image-edit-heading p {
+  margin: 0;
+}
+
+.donativus-vb-image-edit-heading h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.donativus-vb-image-edit-heading p {
+  max-width: 32rem;
+  overflow: hidden;
+  opacity: 0.62;
+  font-size: 0.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.donativus-vb-image-edit-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 19rem;
+  min-width: 0;
+  min-height: 0;
+}
+
+.donativus-vb-image-crop-workspace {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background-color: var(--color-base-200);
+  background-image:
+    linear-gradient(
+      45deg,
+      color-mix(in oklab, var(--color-base-content) 3%, transparent) 25%,
+      transparent 25%
+    ),
+    linear-gradient(
+      -45deg,
+      color-mix(in oklab, var(--color-base-content) 3%, transparent) 25%,
+      transparent 25%
+    ),
+    linear-gradient(
+      45deg,
+      transparent 75%,
+      color-mix(in oklab, var(--color-base-content) 3%, transparent) 75%
+    ),
+    linear-gradient(
+      -45deg,
+      transparent 75%,
+      color-mix(in oklab, var(--color-base-content) 3%, transparent) 75%
+    );
+  background-position:
+    0 0,
+    0 12px,
+    12px -12px,
+    -12px 0;
+  background-size: 24px 24px;
+}
+
+.donativus-vb-image-canvas-toolbar {
+  position: absolute;
+  top: 0.75rem;
+  left: 50%;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  width: max-content;
+  padding: 0.25rem;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-field);
+  box-shadow:
+    0 1px 3px color-mix(in oklab, var(--color-base-content) 10%, transparent),
+    0 10px 28px color-mix(in oklab, var(--color-base-content) 14%, transparent);
+  transform: translateX(-50%);
+}
+
+.donativus-vb-image-zoom-value {
+  min-width: 3.5rem;
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.donativus-vb-image-toolbar-separator {
+  width: 1px;
+  height: 1.5rem;
+  margin-inline: 0.25rem;
+  background: var(--color-base-300);
+}
+
+.donativus-vb-image-crop-scroll-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  padding: 4.5rem 2rem 2rem;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.donativus-vb-image-crop-scroll-content {
+  display: grid;
+  width: max-content;
+  min-width: 100%;
+  min-height: 100%;
+  place-items: center;
+}
+
+.donativus-vb-image-crop-stage {
+  position: relative;
+  flex: none;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--color-base-300);
+  border-radius: var(--radius-field);
+  box-shadow:
+    0 2px 5px color-mix(in oklab, var(--color-base-content) 14%, transparent),
+    0 20px 52px color-mix(in oklab, var(--color-base-content) 18%, transparent);
+  user-select: none;
+}
+
+.donativus-vb-image-crop-source {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  max-width: none;
+  max-height: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.donativus-vb-image-crop-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.5rem;
+  opacity: 0.6;
+  font-size: 0.75rem;
+}
+
+.donativus-vb-image-crop-frame {
+  position: absolute;
+  z-index: 2;
+  box-sizing: border-box;
+  border: 2px solid var(--color-primary);
+  outline: 1px solid
+    color-mix(in oklab, var(--color-primary-content) 72%, transparent);
+  box-shadow: 0 0 0 100vmax
+    color-mix(in oklab, var(--color-neutral) 68%, transparent);
+  cursor: grab;
+  touch-action: none;
+}
+
+.donativus-vb-image-crop-frame:active {
+  cursor: grabbing;
+}
+
+.donativus-vb-image-crop-frame:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+.donativus-vb-image-crop-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.donativus-vb-image-crop-grid i {
+  position: absolute;
+  display: block;
+  background: color-mix(
+    in oklab,
+    var(--color-primary-content) 62%,
+    transparent
+  );
+  box-shadow: 0 0 1px color-mix(in oklab, var(--color-neutral) 50%, transparent);
+}
+
+.donativus-vb-image-crop-grid i:nth-child(1),
+.donativus-vb-image-crop-grid i:nth-child(2) {
+  top: 0;
+  bottom: 0;
+  width: 1px;
+}
+
+.donativus-vb-image-crop-grid i:nth-child(1) {
+  left: 33.333%;
+}
+
+.donativus-vb-image-crop-grid i:nth-child(2) {
+  left: 66.666%;
+}
+
+.donativus-vb-image-crop-grid i:nth-child(3),
+.donativus-vb-image-crop-grid i:nth-child(4) {
+  right: 0;
+  left: 0;
+  height: 1px;
+}
+
+.donativus-vb-image-crop-grid i:nth-child(3) {
+  top: 33.333%;
+}
+
+.donativus-vb-image-crop-grid i:nth-child(4) {
+  top: 66.666%;
+}
+
+.donativus-vb-image-crop-move {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid
+    color-mix(in oklab, var(--color-primary-content) 35%, transparent);
+  border-radius: 999px;
+  color: var(--color-primary-content);
+  background: color-mix(in oklab, var(--color-primary) 82%, transparent);
+  box-shadow: 0 2px 8px
+    color-mix(in oklab, var(--color-neutral) 28%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: opacity 120ms ease;
+}
+
+.donativus-vb-image-crop-frame:hover .donativus-vb-image-crop-move,
+.donativus-vb-image-crop-frame:focus-visible .donativus-vb-image-crop-move {
+  opacity: 1;
+}
+
+.donativus-vb-image-crop-handle {
+  position: absolute;
+  width: 0.875rem;
+  height: 0.875rem;
+  padding: 0;
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-selector);
+  background: var(--color-base-100);
+  box-shadow: 0 1px 4px
+    color-mix(in oklab, var(--color-base-content) 28%, transparent);
+  touch-action: none;
+}
+
+.donativus-vb-image-crop-handle:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.donativus-vb-image-crop-handle.is-northwest {
+  top: 0;
+  left: 0;
+  cursor: nwse-resize;
+  transform: translate(-50%, -50%);
+}
+
+.donativus-vb-image-crop-handle.is-northeast {
+  top: 0;
+  right: 0;
+  cursor: nesw-resize;
+  transform: translate(50%, -50%);
+}
+
+.donativus-vb-image-crop-handle.is-southwest {
+  bottom: 0;
+  left: 0;
+  cursor: nesw-resize;
+  transform: translate(-50%, 50%);
+}
+
+.donativus-vb-image-crop-handle.is-southeast {
+  right: 0;
+  bottom: 0;
+  cursor: nwse-resize;
+  transform: translate(50%, 50%);
+}
+
+.donativus-vb-image-edit-sidebar {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1rem;
+  border-left: 1px solid var(--color-base-300);
+}
+
+.donativus-vb-image-edit-tool-section + .donativus-vb-image-edit-tool-section {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-base-300);
+}
+
+.donativus-vb-image-edit-tool-heading h3,
+.donativus-vb-image-edit-size-label h3 {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.donativus-vb-image-edit-tool-heading p,
+.donativus-vb-image-edit-size-label p {
+  margin: 0.125rem 0 0;
+  opacity: 0.6;
+  font-size: 0.6875rem;
+  line-height: 1.35;
+}
+
+.donativus-vb-image-aspect-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+}
+
+.donativus-vb-image-aspect-grid .btn {
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding-inline: 0.625rem;
+  font-size: 0.6875rem;
+}
+
+.donativus-vb-image-aspect-icon {
+  display: block;
+  width: 1rem;
+  height: 0.75rem;
+  flex: none;
+  border: 1.5px solid currentColor;
+  border-radius: 1px;
+}
+
+.donativus-vb-image-aspect-icon.is-free {
+  border-style: dashed;
+}
+
+.donativus-vb-image-aspect-icon.is-square {
+  width: 0.75rem;
+}
+
+.donativus-vb-image-aspect-icon.is-landscape-4-3 {
+  width: 1rem;
+}
+
+.donativus-vb-image-aspect-icon.is-wide-16-9 {
+  width: 1.125rem;
+  height: 0.625rem;
+}
+
+.donativus-vb-image-edit-size-label {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.75rem;
+}
+
+.donativus-vb-image-edit-size-label output {
+  padding: 0.25rem 0.375rem;
+  border-radius: var(--radius-selector);
+  background: var(--color-base-200);
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.donativus-vb-image-edit-tool-section .range {
+  width: 100%;
+  margin-top: 0.875rem;
+}
+
+.donativus-vb-image-edit-range-ends {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.25rem;
+  opacity: 0.5;
+  font-size: 0.625rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.donativus-vb-image-edit-file-size {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.625rem;
+  margin-top: 1rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-field);
+  background: color-mix(in oklab, currentColor 8%, var(--color-base-100));
+}
+
+.donativus-vb-image-edit-file-size > svg {
+  flex: none;
+}
+
+.donativus-vb-image-edit-file-size div {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.donativus-vb-image-edit-file-size strong {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.donativus-vb-image-edit-file-size span {
+  font-size: 0.6875rem;
+}
+
+.donativus-vb-image-edit-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-field);
+}
+
+.donativus-vb-image-edit-summary div {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.donativus-vb-image-edit-summary span {
+  opacity: 0.55;
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.donativus-vb-image-edit-summary strong {
+  overflow: hidden;
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.donativus-vb-image-edit-error {
+  margin-top: 1rem;
+  padding: 0.625rem;
+  font-size: 0.75rem;
+}
+
+.donativus-vb-image-edit-footer {
+  min-height: 3.75rem;
+  border-top: 1px solid var(--color-base-300);
+}
+
+.donativus-vb-image-edit-footer .btn-primary {
+  gap: 0.375rem;
+}
+
+@media (max-width: 820px) {
+  .donativus-vb-image-edit-modal {
+    height: calc(100vh - 1.5rem);
+  }
+
+  .donativus-vb-image-edit-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(19rem, 1fr) auto;
+    overflow-y: auto;
+  }
+
+  .donativus-vb-image-crop-workspace {
+    min-height: 19rem;
+  }
+
+  .donativus-vb-image-crop-scroll-viewport {
+    padding: 4.5rem 1.25rem 1.25rem;
+  }
+
+  .donativus-vb-image-edit-sidebar {
+    overflow: visible;
+    border-top: 1px solid var(--color-base-300);
+    border-left: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .donativus-vb-image-edit-overlay {
+    padding: 0;
+  }
+
+  .donativus-vb-image-edit-modal {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .donativus-vb-image-edit-header,
+  .donativus-vb-image-edit-footer {
+    padding-inline: 0.75rem;
+  }
+
+  .donativus-vb-image-edit-heading-icon,
+  .donativus-vb-image-edit-footer > .btn {
+    display: none;
+  }
+
+  .donativus-vb-image-edit-footer-actions {
+    width: 100%;
+  }
+
+  .donativus-vb-image-edit-footer-actions .btn-primary {
+    flex: 1 1 auto;
+  }
+}

@@ -1,0 +1,20 @@
+/* Storybook-only stylesheet: builds the daisyUI utility/semantic classes the
+   editor chrome relies on (the consuming app owns this build in production —
+   the host app's Tailwind scan covers the package's dist output). */
+@import "../src/react/styles.css";
+@import "tailwindcss";
+
+@plugin "daisyui" {
+  themes: "light", "dark";
+  root: ":root";
+}
+
+@source "../src";
+
+
+html,
+body,
+#storybook-root {
+  height: 100%;
+  margin: 0;
+}
