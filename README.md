@@ -1,5 +1,9 @@
 # email-visual-builder
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/nistadev/email-visual-builder/main/docs/assets/hero.png" alt="email-visual-builder: a drag-and-drop email editor for React" width="100%">
+</p>
+
 A visual email builder for React. Authors drag blocks onto a canvas, edit text
 in place, and you get back a versioned JSON document plus deterministic,
 email-safe HTML.
@@ -367,9 +371,9 @@ extracted from. CSS classes use the `donativus-vb-` prefix for the same reason.
 ## Used by
 
 <p>
-  <a href="https://donativus.com"><img src="./docs/assets/donativus.png" alt="Donativus" height="48"></a>
+  <a href="https://donativus.com"><img src="https://raw.githubusercontent.com/nistadev/email-visual-builder/main/docs/assets/donativus.png" alt="Donativus" height="48"></a>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://circuitius.com"><img src="./docs/assets/circuitius.png" alt="Circuitius" height="48"></a>
+  <a href="https://circuitius.com"><img src="https://raw.githubusercontent.com/nistadev/email-visual-builder/main/docs/assets/circuitius.png" alt="Circuitius" height="48"></a>
 </p>
 
 Built and maintained with the support of [Aatsin](https://aatsin.com). Using
