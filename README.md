@@ -32,15 +32,16 @@ npm install email-visual-builder
 React 19 and `react-dom` 19 are the only peer dependencies. Then load the
 styles one of two ways.
 
-**Without Tailwind or daisyUI.** Import the self-contained stylesheet. Nothing
-else is needed:
+**Without daisyUI.** Import the self-contained stylesheet. Nothing else is
+needed, whether or not your app uses Tailwind:
 
 ```ts
 import "email-visual-builder/standalone.css";
 ```
 
-Every rule in it is confined to the editor, so it does not restyle your page,
-and none of your classes need to match its names. It is about 23 kB gzipped.
+Every rule in it is confined to the editor, so it does not restyle your page or
+collide with your own Tailwind build, and none of your classes need to match
+its names. It is about 23 kB gzipped.
 
 **With Tailwind CSS 4 and daisyUI 5.** If your app already runs both, let them
 style the editor so it shares your theme, and import only the editor chrome:
@@ -61,8 +62,8 @@ Use one or the other, not both.
 | `email-visual-builder/core`           | Document types, parsing, migrations, registries, commands, the controller, validation | No        |
 | `email-visual-builder/renderers`      | Email and landing-page HTML export                                                    | No        |
 | `email-visual-builder/react`          | Provider, editor UI, presets, rich-text adapter                                       | Yes       |
-| `email-visual-builder/styles.css`     | Editor chrome styles                                                                  | —         |
-| `email-visual-builder/standalone.css` | Everything the editor needs, for hosts without Tailwind and daisyUI                   | —         |
+| `email-visual-builder/standalone.css` | All editor styles in one file, for hosts without daisyUI                              | —         |
+| `email-visual-builder/styles.css`     | Editor chrome only, for hosts that run Tailwind and daisyUI                           | —         |
 
 ## Usage
 
@@ -115,6 +116,7 @@ import {
   createStarterDocument,
 } from "email-visual-builder/core";
 import { EmailVisualBuilder } from "email-visual-builder/react";
+import "email-visual-builder/standalone.css";
 import { buildRegistries, variables } from "./registries";
 
 export function TemplateEditor() {
@@ -395,7 +397,9 @@ Stored documents carry `kind: "donativus.visual-document"` and rich text
 carries `kind: "donativus.rich-text"`. These are stable format identifiers, kept
 for compatibility with documents saved by [Donativus](https://donativus.com),
 the fundraising platform by [Aatsin](https://aatsin.com) this package was
-extracted from. CSS classes use the `donativus-vb-` prefix for the same reason.
+extracted from. CSS classes use the `donativus-vb-` prefix for the same reason,
+including `.donativus-vb-scope`, the wrapper the editor and its floating menus
+render inside.
 
 ## Used by
 
@@ -429,7 +433,7 @@ pnpm test          # node:test through tsx
 pnpm check-types
 pnpm build
 pnpm storybook     # interactive editor at http://localhost:6007
-pnpm sandbox       # the editor in a page with no Tailwind or daisyUI
+pnpm sandbox       # the editor with standalone.css only, after pnpm build
 ```
 
 ## License
