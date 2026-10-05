@@ -399,11 +399,24 @@ extracted from. CSS classes use the `donativus-vb-` prefix for the same reason.
 
 ## Used by
 
-<p>
-  <a href="https://donativus.com"><img src="https://raw.githubusercontent.com/nistadev/email-visual-builder/main/docs/assets/donativus.png" alt="Donativus" height="48"></a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://circuitius.com"><img src="https://raw.githubusercontent.com/nistadev/email-visual-builder/main/docs/assets/circuitius.png" alt="Circuitius" height="48"></a>
-</p>
+<table>
+  <tr>
+    <td align="center" width="280">
+      <a href="https://donativus.com">
+        <img src="https://raw.githubusercontent.com/nistadev/email-visual-builder/main/docs/assets/donativus.png" alt="Donativus" width="200">
+      </a>
+      <br>
+      <sub>Fundraising platform for nonprofits</sub>
+    </td>
+    <td align="center" width="280">
+      <a href="https://circuitius.com">
+        <img src="https://raw.githubusercontent.com/nistadev/email-visual-builder/main/docs/assets/circuitius.png" alt="Circuitius" width="200">
+      </a>
+      <br>
+      <sub>Operating system for leisure circuits</sub>
+    </td>
+  </tr>
+</table>
 
 Built and maintained with the support of [Aatsin](https://aatsin.com). Using
 it in production? Open a pull request to add your project.
