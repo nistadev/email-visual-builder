@@ -5,3 +5,4 @@ storybook-static
 .DS_Store
 .env*
 coverage
+playground/dist

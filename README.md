@@ -4,6 +4,8 @@
   <img src="https://raw.githubusercontent.com/nistadev/email-visual-builder/main/docs/assets/hero.png" alt="email-visual-builder: a drag-and-drop email editor for React" width="100%">
 </p>
 
+**[Try the playground](https://nistadev.github.io/email-visual-builder/)** — build an email in the browser and copy the HTML.
+
 A visual email builder for React. Authors drag blocks onto a canvas, edit text
 in place, and you get back a versioned JSON document plus deterministic,
 email-safe HTML.
@@ -182,8 +184,8 @@ Do not store HTML and try to edit it later.
 ### Saving and loading
 
 ```ts
-// Save: validate and serialize what the editor holds.
-const result = controller.export();
+// Save: validate, serialize and render what the editor holds.
+const result = exportVisualDocument(controller.getState().document, registries);
 if (result.errors.length === 0) {
   await api.save({ document: result.json, html: result.html });
 }
@@ -433,7 +435,7 @@ pnpm test          # node:test through tsx
 pnpm check-types
 pnpm build
 pnpm storybook     # interactive editor at http://localhost:6007
-pnpm sandbox       # the editor with standalone.css only, after pnpm build
+pnpm playground    # the public playground locally, after pnpm build
 ```
 
 ## License

@@ -67,7 +67,8 @@
     "build-storybook": "storybook build",
     "prepublishOnly": "pnpm clean && pnpm build",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"*.md\"",
-    "sandbox": "vite sandbox --port 6011"
+    "playground": "vite playground --port 6011",
+    "build:playground": "vite build playground"
   },
   "dependencies": {
     "@dnd-kit/core": "6.3.1",
